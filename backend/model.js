@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema(
 
 const studentSchema = new mongoose.Schema(
   {
+    studentUniqueId: {
+      type: String,
+      required: true,
+      unique: true,
+      sparse: true,
+      immutable: true,
+      match: /^\d{12}$/,
+    },
     name: {
       type: String,
       required: true,
@@ -83,6 +91,13 @@ const courseSchema = new mongoose.Schema(
 
 const enrollmentSchema = new mongoose.Schema(
   {
+    enrollmentNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      sparse: true,
+      match: /^\d{12}$/,
+    },
     student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",

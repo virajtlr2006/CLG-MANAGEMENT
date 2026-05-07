@@ -103,7 +103,7 @@ function EnrollmentsPage() {
               <option value="">Select student</option>
               {students.map((student) => (
                 <option key={student._id} value={student._id}>
-                  {student.name} ({student.department})
+                  {student.name} ({student.studentUniqueId || "N/A"})
                 </option>
               ))}
             </select>
@@ -168,6 +168,12 @@ function EnrollmentsPage() {
               key={enrollment._id}
               className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700"
             >
+              <p className="mb-1 text-xs font-medium text-purple-700">
+                Enrollment No: {enrollment.enrollmentNumber || "N/A"}
+              </p>
+              <p className="mb-1 text-xs font-medium text-slate-600">
+                Student ID: {enrollment.student?.studentUniqueId || "N/A"}
+              </p>
               <span className="font-medium">{enrollment.student?.name}</span> enrolled in{" "}
               <span className="font-medium">{enrollment.course?.code}</span> ({enrollment.course?.title})
               {" "}for semester {enrollment.semester}

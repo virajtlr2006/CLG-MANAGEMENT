@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../api";
 
-const initialForm = { id: "", name: "", email: "", department: "", semester: 1 };
+const initialForm = {
+  id: "",
+  studentUniqueId: "",
+  name: "",
+  email: "",
+  department: "",
+  semester: 1,
+};
 
 function StudentsPage() {
   const [students, setStudents] = useState([]);
@@ -14,14 +21,23 @@ function StudentsPage() {
     setStudents(data);
   }
 
+  async function loadNextUniqueId() {
+    const data = await apiRequest("/students/next-unique-id");
+    setForm((prev) => ({ ...prev, studentUniqueId: data.studentUniqueId }));
+  }
+
   useEffect(() => {
     let ignore = false;
 
     async function bootstrap() {
       try {
-        const data = await apiRequest("/students");
+        const [studentsData, uniqueIdData] = await Promise.all([
+          apiRequest("/students"),
+          apiRequest("/students/next-unique-id"),
+        ]);
         if (!ignore) {
-          setStudents(data);
+          setStudents(studentsData);
+          setForm((prev) => ({ ...prev, studentUniqueId: uniqueIdData.studentUniqueId }));
         }
       } catch (error) {
         if (!ignore) {
@@ -55,11 +71,18 @@ function StudentsPage() {
         });
         setStatus("Student updated successfully.");
       } else {
-        await apiRequest("/students", { method: "POST", body: JSON.stringify(payload) });
+        await apiRequest("/students", {
+          method: "POST",
+          body: JSON.stringify({
+            ...payload,
+            studentUniqueId: form.studentUniqueId,
+          }),
+        });
         setStatus("Student created successfully.");
       }
       setForm(initialForm);
       await loadStudents();
+      await loadNextUniqueId();
     } catch (submitError) {
       setStatus(submitError.message);
     } finally {
@@ -86,6 +109,20 @@ function StudentsPage() {
           {form.id ? "Edit student" : "Add student"}
         </h3>
         <form onSubmit={handleSubmit} className="grid gap-3 md:grid-cols-2">
+          <div>
+            <label
+              htmlFor="student-unique-id"
+              className="mb-1 block text-sm font-medium text-slate-700"
+            >
+              Student Unique ID
+            </label>
+            <input
+              id="student-unique-id"
+              value={form.studentUniqueId || "Generating..."}
+              readOnly
+              className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-slate-700 outline-none"
+            />
+          </div>
           <div>
             <label htmlFor="student-name" className="mb-1 block text-sm font-medium text-slate-700">
               Name
@@ -169,7 +206,9 @@ function StudentsPage() {
               className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2"
             >
               <p className="text-sm text-slate-700">
-                <span className="font-medium">{student.name}</span> · {student.email} ·{" "}
+                <span className="font-medium">{student.name}</span> · ID:{" "}
+                <span className="font-medium">{student.studentUniqueId || "N/A"}</span> ·{" "}
+                {student.email} ·{" "}
                 {student.department} · Sem {student.semester}
               </p>
               <div className="space-x-2">
@@ -178,6 +217,7 @@ function StudentsPage() {
                   onClick={() =>
                     setForm({
                       id: student._id,
+                      studentUniqueId: student.studentUniqueId || "",
                       name: student.name,
                       email: student.email,
                       department: student.department,
