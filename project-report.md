@@ -1,8 +1,75 @@
 # Project Report - CLG MANAGEMENT
 
+## Project Description
+CLG MANAGEMENT is a full-stack college management system built to manage core academic records in one place. It provides user authentication and allows admins/users to create, update, view, and delete students, courses, and enrollments. The project uses a React frontend for the user interface and a Node.js + Express + MongoDB backend for API and data persistence.
+
+## Project Information
+- **Project Name:** CLG MANAGEMENT
+- **Project Type:** Full-stack web application
+- **Frontend:** React (Vite), React Router, Tailwind CSS
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB (Mongoose)
+- **Core Modules:** Authentication, Students, Courses, Enrollments, Dashboard
+- **Default API Base URL:** `http://localhost:3000/api`
+
+## Codebase Structure
+- `backend/` - Server, routes, models, API logic
+- `frontend/src/` - UI components, pages, routing, API client
+
+## Folder Structure
+```text
+CLG MANAGEMENT/
+├── backend/
+│   ├── .env
+│   ├── docker-compose.yml
+│   ├── index.js
+│   ├── model.js
+│   ├── route.js
+│   └── package.json
+├── frontend/
+│   ├── package.json
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── App.css
+│       ├── api.js
+│       ├── index.css
+│       ├── components/
+│       │   ├── AppLayout.jsx
+│       │   └── ProtectedRoute.jsx
+│       └── pages/
+│           ├── LoginPage.jsx
+│           ├── RegisterPage.jsx
+│           ├── DashboardPage.jsx
+│           ├── StudentsPage.jsx
+│           ├── CoursesPage.jsx
+│           └── EnrollmentsPage.jsx
+└── project-report.md
+```
+
+## Project Objectives
+1. Provide a centralized platform to manage students, courses, and enrollments.
+2. Offer a simple authentication flow (register/login) for secure access.
+3. Enable full CRUD operations for core academic records.
+4. Show a dashboard with live counts for quick administrative overview.
+
+## Functional Workflow
+1. User registers and logs in.
+2. User adds students and courses.
+3. User creates enrollments by mapping student + course + semester.
+4. Dashboard and listing pages display and manage all saved records.
+
+## Backend API Summary
+- **Auth:** `/api/auth/register`, `/api/auth/login`
+- **Students:** create, list, get by id, update, delete, next unique id
+- **Courses:** create, list, get by id, update, delete
+- **Enrollments:** create and list with populated student/course details
+
 ## Complete Project Code
 
 ### backend/package.json
+**Work of this code:** Defines backend package metadata, startup script, and dependencies required to run the Node.js API server.
+
 ```json
 {
   "name": "clg-management-backend",
@@ -22,6 +89,8 @@
 ```
 
 ### backend/index.js
+**Work of this code:** Starts the Express server, configures middleware (CORS + JSON), connects MongoDB, mounts API routes, and handles common server errors.
+
 ```js
 require("dotenv").config();
 const express = require("express");
@@ -61,6 +130,8 @@ startServer();
 ```
 
 ### backend/model.js
+**Work of this code:** Declares MongoDB schemas/models for `User`, `Student`, `Course`, and `Enrollment` including validations and unique constraints.
+
 ```js
 const mongoose = require("mongoose");
 
@@ -200,6 +271,8 @@ module.exports = {
 ```
 
 ### backend/route.js
+**Work of this code:** Implements all REST API endpoints for authentication, student/course CRUD, and enrollment creation/listing with unique ID/number generation logic.
+
 ```js
 const express = require("express");
 const { randomInt } = require("crypto");
@@ -430,6 +503,8 @@ module.exports = router;
 ```
 
 ### frontend/package.json
+**Work of this code:** Defines frontend scripts and dependencies for the React + Vite application.
+
 ```json
 {
   "name": "frontend",
@@ -465,6 +540,8 @@ module.exports = router;
 ```
 
 ### frontend/src/main.jsx
+**Work of this code:** Entry point of the frontend app; mounts React root and enables routing with `BrowserRouter`.
+
 ```jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -482,6 +559,8 @@ createRoot(document.getElementById('root')).render(
 ```
 
 ### frontend/src/App.jsx
+**Work of this code:** Configures all application routes, route protection, and layout wrapping for protected pages.
+
 ```jsx
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
@@ -553,6 +632,8 @@ export default App;
 ```
 
 ### frontend/src/api.js
+**Work of this code:** Central API utility for sending HTTP requests to backend and handling common error responses.
+
 ```js
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
@@ -577,6 +658,8 @@ export async function apiRequest(path, options = {}) {
 ```
 
 ### frontend/src/components/ProtectedRoute.jsx
+**Work of this code:** Prevents unauthenticated users from opening protected routes and redirects them to login.
+
 ```jsx
 import { Navigate } from "react-router-dom";
 
@@ -594,6 +677,8 @@ export default ProtectedRoute;
 ```
 
 ### frontend/src/components/AppLayout.jsx
+**Work of this code:** Provides shared dashboard layout with sidebar navigation, page title area, and logout behavior.
+
 ```jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -662,6 +747,8 @@ export default AppLayout;
 ```
 
 ### frontend/src/pages/LoginPage.jsx
+**Work of this code:** Renders login form, calls login API, stores logged-in email in local storage, and navigates to dashboard on success.
+
 ```jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -757,6 +844,8 @@ export default LoginPage;
 ```
 
 ### frontend/src/pages/RegisterPage.jsx
+**Work of this code:** Renders registration form, creates new user account through API, and redirects user to login after successful registration.
+
 ```jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -861,6 +950,8 @@ export default RegisterPage;
 ```
 
 ### frontend/src/pages/DashboardPage.jsx
+**Work of this code:** Fetches student/course/enrollment counts and displays a summary dashboard plus workflow guidance.
+
 ```jsx
 import { useEffect, useState } from "react";
 import { getApiBaseUrl, apiRequest } from "../api";
@@ -929,6 +1020,8 @@ export default DashboardPage;
 ```
 
 ### frontend/src/pages/StudentsPage.jsx
+**Work of this code:** Manages student records with create/update/delete operations and auto-fetches next available student unique ID.
+
 ```jsx
 import { useEffect, useState } from "react";
 import { apiRequest } from "../api";
@@ -1180,6 +1273,8 @@ export default StudentsPage;
 ```
 
 ### frontend/src/pages/CoursesPage.jsx
+**Work of this code:** Manages course catalog with create/update/delete operations and list rendering.
+
 ```jsx
 import { useEffect, useState } from "react";
 import { apiRequest } from "../api";
@@ -1388,6 +1483,8 @@ export default CoursesPage;
 ```
 
 ### frontend/src/pages/EnrollmentsPage.jsx
+**Work of this code:** Creates student-course enrollments by semester and lists enrollment records with populated details.
+
 ```jsx
 import { useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api";
@@ -1580,6 +1677,8 @@ export default EnrollmentsPage;
 ```
 
 ### frontend/src/index.css
+**Work of this code:** Loads Tailwind layers and applies base page styling for the app.
+
 ```css
 @tailwind base;
 @tailwind components;
@@ -1591,6 +1690,8 @@ body {
 ```
 
 ### frontend/src/App.css
+**Work of this code:** Contains additional app-level CSS styles from template/UI layer.
+
 ```css
 .counter {
   font-size: 16px;
